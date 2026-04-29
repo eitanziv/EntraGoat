@@ -43,7 +43,26 @@ EntraGoat provides an interactive web interface for challenge management and Pow
 
 5. **Run the Setup Script for each given scenario**
 
-#### Method 2: Manual PowerShell Setup
+#### Method 2: PowerShell GUI (no Node.js required)
+
+Prefer to stay in the terminal? A native PowerShell WPF GUI ships with EntraGoat and mirrors every feature of the web UI (challenge cards, hints, flag submission, setup/cleanup script viewer) — and adds a **Run** button so scripts can be executed in the current session without any copy/paste.
+
+```powershell
+.\Start-EntraGoat.ps1
+```
+
+Optional flags:
+
+```powershell
+.\Start-EntraGoat.ps1 -Reset   # clear stored completion state
+```
+
+Notes:
+- Requires Windows (WPF). Works on Windows PowerShell 5.1 and PowerShell 7+.
+- Completion state is stored in `%APPDATA%\EntraGoat\state.json`.
+- Pick **either** the web GUI **or** the PowerShell GUI for a given session — completion state is not shared between them.
+
+#### Method 3: Manual PowerShell Setup
 
 For individual scenarios, navigate to the specific challenge directory:
 

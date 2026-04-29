@@ -377,3 +377,5 @@ if ($DeletionComplete) {
 # }
 
 Write-Host "`nCleanup process for Scenario 4 complete." -ForegroundColor White
+Write-Host "=====================================================" -ForegroundColor DarkGray
+Write-Host ""

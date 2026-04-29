@@ -512,8 +512,6 @@ Write-Host "================= BASE64 ENCODED PFX ======================" -Foregr
 Write-Host $certBase64ForUserOutput -ForegroundColor Gray
 Write-Host "===============================================================" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "Hint: This cert seems harmless but listen closely. It may speak with someone else`'s authority." -ForegroundColor DarkGray
-Write-Host ""
 
 if ($VerbosePreference -ne 'Continue') {
     if ($SetupSuccessful) {
