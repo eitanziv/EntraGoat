@@ -329,14 +329,17 @@ if (-not $IsAlreadyGAMember) {
 
 #region Create Certificate
 Write-Verbose "[*] Creating self-signed certificate..."
-$cert = New-SelfSignedCertificate `
-    -Subject "CN=$PrivilegedAppName" `
-    -CertStoreLocation "Cert:\CurrentUser\My" `
-    -KeyExportPolicy Exportable `
-    -KeySpec Signature `
-    -KeyLength 2048 `
-    -HashAlgorithm SHA256 `
-    -NotAfter (Get-Date).AddYears(2)
+$rsa = [System.Security.Cryptography.RSA]::Create(2048)
+$certReq = [System.Security.Cryptography.X509Certificates.CertificateRequest]::new(
+    "CN=$PrivilegedAppName",
+    $rsa,
+    [System.Security.Cryptography.HashAlgorithmName]::SHA256,
+    [System.Security.Cryptography.RSASignaturePadding]::Pkcs1
+)
+$cert = $certReq.CreateSelfSigned(
+    [System.DateTimeOffset]::Now,
+    [System.DateTimeOffset]::Now.AddYears(2)
+)
 
 # For PFX export (base64 for output to user at the end)
 $pfxCertBytesForUserOutput = $cert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Pfx, $CertificatePassword)
@@ -345,7 +348,7 @@ $certBase64ForUserOutput = [System.Convert]::ToBase64String($pfxCertBytesForUser
 # For adding to application keyCredentials attribute:
 # https://learn.microsoft.com/en-us/graph/api/resources/keycredential?view=graph-rest-1.0
 # 1. 'Key' property needs raw certificate data as byte[]
-$rawCertDataBytesForAppKey = $cert.GetRawCertData()
+$rawCertDataBytesForAppKey = $cert.RawData
 
 # 2. 'CustomKeyIdentifier' property (specifies a custom key ID) - byte[]
 #    The thumbprint string is HEX, so convert it to bytes.
@@ -355,8 +358,7 @@ for ($i = 0; $i -lt $thumbprintHex.Length; $i += 2) {
     $customKeyIdentifierBytes[$i / 2] = [System.Convert]::ToByte($thumbprintHex.Substring($i, 2), 16)
 }
 
-Remove-Item -Path "Cert:\CurrentUser\My\$($cert.Thumbprint)" -Force -ErrorAction SilentlyContinue
-Write-Verbose " Certificate created (Thumbprint: $($cert.Thumbprint)) and PFX data prepared. Removed from local store."
+Write-Verbose " Certificate created (Thumbprint: $($cert.Thumbprint)) and PFX data prepared."
 #endregion Create Certificate
 
 #region Create Application Registration and Service Principal
