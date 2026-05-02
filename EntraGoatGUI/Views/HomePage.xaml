@@ -3,7 +3,7 @@
               VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="40,30">
     <StackPanel HorizontalAlignment="Center" MaxWidth="1000">
         <!-- Logo -->
-        <Image x:Name="LogoImage" Height="360" Margin="0,0,0,0" HorizontalAlignment="Center"/>
+        <Image x:Name="LogoImage" Height="360" Margin="0,-30,0,-30" HorizontalAlignment="Center"/>
 
         <!-- Subtitle -->
         <TextBlock Text="Sharpen your Entra ID attack skills with hands-on privilege escalation scenarios. Each scenario drops you into a realistic breach: enumerate permissions, chain misconfigurations, escalate privileges to log in as Global Admin to prove tenant dominance."
