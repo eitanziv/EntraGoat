@@ -417,7 +417,7 @@ if ($DeletionComplete) {
 }
 
 Write-Host "`nCleanup process for Scenario 6 complete." -ForegroundColor White
-Write-Host ""
+Write-Host "=====================================================" -ForegroundColor DarkGray
 Write-Host "[!] Important notes: Manually review any remaining certificate authorities for legitimacy" -ForegroundColor Yellow
 Write-Host ""
 

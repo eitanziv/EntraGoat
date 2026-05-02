@@ -718,4 +718,7 @@ if ($VerbosePreference -eq 'Continue') {
     }
     Write-Host ""
 }
+Write-Host "`nSetup process for Scenario 5 complete." -ForegroundColor White
+Write-Host "=====================================================" -ForegroundColor DarkGray
+Write-Host ""
 #endregion
