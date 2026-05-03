@@ -1,159 +1,117 @@
 # EntraGoat - A Deliberately Vulnerable Entra ID Environment
 
-<img src="./assets/LogoEntra.png" width=25% height=25%>
+<p align="center">
+  <img src="./assets/LogoEntra.png" width="30%">
+</p>
 
-**EntraGoat** is a deliberately vulnerable Microsoft Entra ID infrastructure designed to simulate real-world identity security misconfigurations and attack vectors. EntraGoat introduces intentional vulnerabilities in your environment to provide a realistic learning platform for security professionals. It features multiple privilege escalation paths and focuses on black-box attack methodologies.
+**EntraGoat** is a deliberately vulnerable Microsoft Entra ID infrastructure for security professionals. Deploy real-world identity misconfigurations and privilege escalation paths in your own tenant, then practice exploiting them in a safe, black-box CTF format.
 
-EntraGoat uses PowerShell scripts and Microsoft Graph APIs to deploy vulnerable configurations in your Entra ID tenant. This gives users complete control over the learning environment while maintaining isolation from production systems.
+📖 [Full Documentation](./docs/) &nbsp;|&nbsp; 🌐 [Wiki](https://github.com/Semperis/EntraGoat/wiki) &nbsp;|&nbsp; 📝 [Blog Posts](https://www.semperis.com/blog/what-is-entragoat-entra-id-simulation-environment/)
 
+---
 
-## 🐐 Getting Started 🐐
+## Quick Start
 
 ### Prerequisites
-- A Microsoft Entra ID tenant (Use a test/trial tenant)
-- Global Administrator privileges
-- Microsoft Graph PowerShell SDK
-- Node.js, npm
 
-### ⚙️ Installation
+- Microsoft Entra ID **test/trial tenant** with Global Administrator
+- [Microsoft Graph PowerShell SDK](https://learn.microsoft.com/en-us/powershell/microsoftgraph/installation)
 
-EntraGoat provides an interactive web interface for challenge management and PowerShell scripts for infrastructure deployment.
-
-#### Method 1: Quick Setup 
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Semperis/EntraGoat
-   cd EntraGoat
-   ```
-
-2. **Install Microsoft Graph PowerShell SDK**
-   ```powershell
-   Install-Module Microsoft.Graph -Scope CurrentUser -Force
-   ```
-
-3. **Run the web interface**
-   ```bash
-   cd .\frontend
-   npm install
-   npm start
-   ```
-
-4. **Access EntraGoat at** `http://localhost:3000`
-
-5. **Run the Setup Script for each given scenario**
-
-
-#### Method 2: PowerShell GUI (no Node.js required)
-
-Prefer to stay in the terminal? A native PowerShell WPF GUI ships with EntraGoat and mirrors every feature of the web UI (challenge cards, hints, flag submission, setup/cleanup script viewer) — and adds a **Run** button so scripts can be executed in the current session without any copy/paste.
+### Option A: PowerShell GUI *(recommended, no Node.js)*
 
 ```powershell
+git clone https://github.com/Semperis/EntraGoat && cd EntraGoat
+Install-Module Microsoft.Graph -Scope CurrentUser -Force
 .\Start-EntraGoat.ps1
 ```
 
-Optional flags:
+> Requires Windows (WPF). Works on PowerShell 5.1+ and 7+.  
+> Zoom: **Ctrl+Plus** / **Ctrl+Minus** / **Ctrl+0**
 
-```powershell
-.\Start-EntraGoat.ps1 -Reset   # clear stored completion state
+### Option B: Web UI
+
+```bash
+git clone https://github.com/Semperis/EntraGoat && cd EntraGoat
+Install-Module Microsoft.Graph -Scope CurrentUser -Force
+cd frontend && npm install && npm start
 ```
 
-Notes:
-- Requires Windows (WPF). Works on Windows PowerShell 5.1 and PowerShell 7+.
-- Completion state is stored in `%APPDATA%\EntraGoat\state.json`.
-- Pick **either** the web GUI **or** the PowerShell GUI for a given session — completion state is not shared between them.
+Open `http://localhost:3000`
 
-#### Method 3: Manual PowerShell Setup
-=======
-#### Method 2: Manual PowerShell Setup (Recommended)
-
-
-For individual scenarios, navigate to the specific challenge directory:
+### Option C: Manual scripts
 
 ```powershell
 cd scenarios
 .\EntraGoat-Scenario1-Setup.ps1
 ```
 
-## 🎯 Challenge Structure
-
-Each scenario includes:
-- **Setup Script** - Deploys vulnerable configuration
-- **Cleanup Script** - Removes all created objects
-- **Solution Walkthrough** - Step-by-step attack demonstration
-- **Capture the Flag** - Hidden flags to discover
-
-## 💰 Pricing
-
-EntraGoat scenarios run entirely within your existing Entra ID tenant and do not incur additional Microsoft licensing costs. The vulnerabilities are created through configuration changes only.
-
-**Note:** Use a dedicated test tenant to avoid impacting production environments.
-
-## 👥 Contributors
-
-- **Jonathan Elkabas** - Security Researcher @Semperis
-- **Tomer Nahum** - Security Research Team Lead @Semperis
-
-## Presented at
-
-- **Black Hat USA 2025** - Arsenal
-- **DEF CON 33** - Demo Labs
-- **BSides Frankfurt 2025** - Main hall 
-- **SEC-T 0x11** - Main hall
-- **Black Hat SecTor 2025** - Arsenal
-- **Black Hat Europe 2025** - Arsenal
-
-## Solutions
-
-⚠️ **Spoiler Alert!** Solution files contain complete attack walkthroughs.
-
-Solution guides are available in the `solutions/` directory for each scenario:
-- Detailed step-by-step attack procedures
-- PowerShell automation scripts
-
-## Resources
-- [What Is EntraGoat?](https://www.semperis.com/blog/what-is-entragoat-entra-id-simulation-environment/)
-- [Getting started with EntraGoat](https://www.semperis.com/blog/getting-started-with-entragoat-entra-id-simulation-lab/)
-- [Scenario 1 Solution: Service Principal Ownership Abuse in Entra ID](https://www.semperis.com/blog/service-principal-ownership-abuse-in-entra-id/)
-- [Scenario 2 Solution: Exploiting App-Only Graph Permissions in Entra ID](https://www.semperis.com/blog/exploiting-app-only-graph-permissions-in-entra-id/)
-- [Scenario 6 Solution: Exploiting Certificate-Based Authentication to Impersonate Global Admin in Entra ID](https://www.semperis.com/blog/exploiting-certificate-based-authentication-in-entra-id/)
-
-## Screenshots
-
-### Main Dashboard
-![Main Dashboard](./screenshots/dashboard.png)
-
-### Challenge Interface
-![Challenge Interface](./screenshots/challenge-view.png)
-
-### PowerShell Setup
-![PowerShell Setup](./screenshots/powershell-setup.png)
-
-
-## 🤝 Contribution Guidelines
-
-We welcome contributions from the security community:
-
-- **New Scenarios** - Additional attack vectors and privilege escalation chains
-- **Code Improvements** - PowerShell script optimization and error handling
-- **Documentation** - Enhanced learning materials and walkthroughs
-- **Bug Reports** - Issue identification and resolution
-- **Feature Requests** - New functionality and improvements
-
-## ⚠️ Disclaimer
-
-**For Educational Purposes Only**
-
-EntraGoat is designed exclusively for educational and authorized security testing purposes. Users are responsible for:
-- Obtaining proper authorization before testing
-- Using dedicated test environments only
-- Complying with applicable laws and regulations
-- Following responsible disclosure practices
-
-The authors assume no liability for misuse of this tool.
-
-This project is licensed under the terms of the MIT license, and is provided for educational and informational purposes only. It is intended to promote awareness and educate on misconfigurations and attack paths, that may exist on systems you own or are authorized to test. Unauthorized use of this information for malicious purposes, exploitation, or unlawful access is strictly prohibited. Semperis does not endorse or condone any illegal activity and disclaims any liability arising from misuse of the material. Additionally, Semperis does not guarantee the accuracy or completeness of the content and assumes no liability for any damages resulting from its use.
+> See [docs/getting-started.md](./docs/getting-started.md) for detailed setup instructions.
 
 ---
 
-**Happy Hacking!** - The EntraGoat Team
+## Challenges
+
+| # | Name | Difficulty |
+|---|------|-----------|
+| 1 | Misowned and Dangerous — Owner's Manual to Global Admin | Beginner |
+| 2 | Graph Me the Crown (and Role) | Beginner |
+| 3 | Group MemberShipwreck — Sailed into Admin Waters | Beginner |
+| 4 | The Eligible Menace — PIM Path to Power | Intermediate |
+| 5 | AU to Admin — The Restricted Path | Advanced |
+| 6 | Certificate of Insanity — Trusting the Wrong Authority | Advanced |
+
+Each scenario includes a setup script, cleanup script, solution walkthrough, and a hidden flag.
+
+---
+
+## Screenshots
+
+### PowerShell GUI *(recommended)*
+
+| Home | Challenge |
+|:-:|:-:|
+| ![PS GUI Home](./screenshots/ps-gui-home.png) | ![PS GUI Challenge](./screenshots/ps-gui-challenge.png) |
+
+### Terminal Output
+
+| Setup | Cleanup |
+|:-:|:-:|
+| ![Setup Output](./screenshots/terminal-setup.png) | ![Cleanup Output](./screenshots/terminal-cleanup.png) |
+
+### Web UI *(alternative)*
+
+| Dashboard | Challenge |
+|:-:|:-:|
+| ![Web Dashboard](./screenshots/dashboard.png) | ![Web Challenge](./screenshots/challenge-view.png) |
+
+---
+
+## Presented at
+
+- **Black Hat USA 2025** — Arsenal
+- **DEF CON 33** — Demo Labs
+- **BSides Frankfurt 2025** 
+- **SEC-T 0x11** 
+- **Black Hat SecTor 2025** — Arsenal
+- **Black Hat Europe 2025** — Arsenal
+- **Black Hat Asia 2026** — Arsenal
+
+
+
+## Resources
+
+- [What Is EntraGoat?](https://www.semperis.com/blog/what-is-entragoat-entra-id-simulation-environment/)
+- [Getting Started with EntraGoat](https://www.semperis.com/blog/getting-started-with-entragoat-entra-id-simulation-lab/)
+- [Scenario 1: Service Principal Ownership Abuse](https://www.semperis.com/blog/service-principal-ownership-abuse-in-entra-id/)
+- [Scenario 2: Exploiting App-Only Graph Permissions](https://www.semperis.com/blog/exploiting-app-only-graph-permissions-in-entra-id/)
+- [Scenario 6: Certificate-Based Authentication Abuse](https://www.semperis.com/blog/exploiting-certificate-based-authentication-in-entra-id/)
+
+---
+
+## ⚠️ Disclaimer
+
+**For educational and authorized testing only.** Use a dedicated test tenant. See [LICENSE](./LICENSE) for full terms. The authors assume no liability for misuse.
+
+---
+
+**Happy Hunting!** — The EntraGoat Team

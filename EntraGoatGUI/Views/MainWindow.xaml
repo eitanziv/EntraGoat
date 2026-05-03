@@ -20,6 +20,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <Button x:Name="BackButton" Grid.Column="0" Content="&#x2190; Back"
                         Background="Transparent" Foreground="{{Primary}}" BorderBrush="{{Primary}}"
@@ -33,10 +34,25 @@
                 <Button x:Name="NextButton" Grid.Column="3" Content="Next &#x2192;"
                         Background="Transparent" Foreground="{{TextPrimary}}" BorderBrush="{{BorderColor}}"
                         BorderThickness="1" Padding="10,5" Cursor="Hand" Visibility="Collapsed"/>
+                <!-- Zoom controls -->
+                <StackPanel Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
+                    <Button x:Name="ZoomOutButton" Content="&#x2212;" FontSize="16" FontWeight="Bold"
+                            Background="Transparent" Foreground="{{TextPrimary}}" BorderBrush="{{BorderColor}}"
+                            BorderThickness="1" Width="28" Height="28" Cursor="Hand" Padding="0"/>
+                    <TextBlock x:Name="ZoomLabel" Text="100%" Foreground="{{TextSecondary}}"
+                               FontFamily="{{FontUI}}" FontSize="11" VerticalAlignment="Center"
+                               Margin="6,0,6,0" MinWidth="36" TextAlignment="Center"/>
+                    <Button x:Name="ZoomInButton" Content="+" FontSize="16" FontWeight="Bold"
+                            Background="Transparent" Foreground="{{TextPrimary}}" BorderBrush="{{BorderColor}}"
+                            BorderThickness="1" Width="28" Height="28" Cursor="Hand" Padding="0"/>
+                </StackPanel>
             </Grid>
         </Border>
 
         <!-- Dynamic content area -->
-        <ContentControl x:Name="PageHost"/>
+        <Grid>
+            <Border x:Name="GlowLayer" IsHitTestVisible="False"/>
+            <ContentControl x:Name="PageHost"/>
+        </Grid>
     </DockPanel>
 </Window>

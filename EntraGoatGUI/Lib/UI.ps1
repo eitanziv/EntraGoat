@@ -100,12 +100,19 @@ function New-EntraGoatChallengeCard {
     $border.Margin = '10'
     $border.Cursor = 'Hand'
 
-    # Hover effect via mouse enter/leave
+    # Hover effect via mouse enter/leave with glow
     $border.Add_MouseEnter({
         $this.Background = New-EntraGoatBrush '#262626'
+        $glow = [System.Windows.Media.Effects.DropShadowEffect]::new()
+        $glow.Color = [System.Windows.Media.ColorConverter]::ConvertFromString('#00D4AA')
+        $glow.BlurRadius = 25
+        $glow.ShadowDepth = 0
+        $glow.Opacity = 0.5
+        $this.Effect = $glow
     })
     $border.Add_MouseLeave({
         $this.Background = New-EntraGoatBrush '#1F1F1F'
+        $this.Effect = $null
     })
 
     $grid = [System.Windows.Controls.Grid]::new()
@@ -243,6 +250,7 @@ function global:Navigate-EntraGoatPage {
     $prevBtn    = $Window.FindName('PrevButton')
     $nextBtn    = $Window.FindName('NextButton')
     $breadcrumb = $Window.FindName('BreadcrumbText')
+    $glowLayer  = $Window.FindName('GlowLayer')
 
     switch ($View) {
         'Home' {
@@ -252,6 +260,7 @@ function global:Navigate-EntraGoatPage {
             $prevBtn.Visibility = 'Collapsed'
             $nextBtn.Visibility = 'Collapsed'
             $breadcrumb.Text = 'Home'
+            if ($glowLayer) { $glowLayer.Visibility = 'Visible' }
             $pageHost.Content = Build-EntraGoatHomePage -Window $Window
         }
         'Challenge' {
@@ -261,23 +270,25 @@ function global:Navigate-EntraGoatPage {
             $challenge = $nav.Challenges | Where-Object { $_.Id -eq $id } | Select-Object -First 1
             $backBtn.Visibility = 'Visible'
             $backBtn.Content = [char]0x2190 + ' Back to Home'
+            if ($glowLayer) { $glowLayer.Visibility = 'Collapsed' }
             $prevBtn.Visibility = 'Visible'
             $nextBtn.Visibility = 'Visible'
             $total = ($nav.Challenges | Measure-Object).Count
             $prevBtn.IsEnabled = ($id -gt 1)
             $nextBtn.IsEnabled = ($id -lt $total)
-            $breadcrumb.Text = "Home > Challenge #$id`: $($challenge.Title)"
+            $breadcrumb.Text = "Home > Challenge #$id"
             $pageHost.Content = Build-EntraGoatChallengePage -Window $Window -Challenge $challenge
         }
         'Script' {
             $nav.CurrentScriptType = $Params.ScriptType
             $backBtn.Visibility = 'Visible'
             $backBtn.Content = [char]0x2190 + ' Back to Challenge'
+            if ($glowLayer) { $glowLayer.Visibility = 'Collapsed' }
             $prevBtn.Visibility = 'Collapsed'
             $nextBtn.Visibility = 'Collapsed'
             $id = $nav.CurrentChallengeId
             $challenge = $nav.Challenges | Where-Object { $_.Id -eq $id } | Select-Object -First 1
-            $breadcrumb.Text = "Home > Challenge #$id > $($Params.ScriptType) Script"
+            $breadcrumb.Text = "Home > Challenge #$id > $($Params.ScriptType)"
             $pageHost.Content = Build-EntraGoatScriptPage -Window $Window -Title "$($Params.ScriptType) - Challenge $id" -ScriptPath $Params.ScriptPath -ScriptType $Params.ScriptType
         }
     }
@@ -302,6 +313,13 @@ function global:Build-EntraGoatHomePage {
         $bi.CacheOption = 'OnLoad'
         $bi.EndInit()
         $logoImage.Source = $bi
+        # Glow effect on logo
+        $logoGlow = [System.Windows.Media.Effects.DropShadowEffect]::new()
+        $logoGlow.Color = [System.Windows.Media.ColorConverter]::ConvertFromString((Get-EntraGoatTheme).Primary)
+        $logoGlow.BlurRadius = 40
+        $logoGlow.ShadowDepth = 0
+        $logoGlow.Opacity = 0.6
+        $logoImage.Effect = $logoGlow
     } else {
         $logoImage.Visibility = 'Collapsed'
     }
@@ -376,6 +394,13 @@ function global:Build-EntraGoatChallengePage {
         $iconPath = Join-Path (Split-Path (Get-EntraGoatRootPath)) "icons\$iconFile"
         if (Test-Path $iconPath) {
             $challengeIcon.Source = [System.Windows.Media.Imaging.BitmapImage]::new([uri]$iconPath)
+            # Subtle glow on challenge watermark
+            $iconGlow = [System.Windows.Media.Effects.DropShadowEffect]::new()
+            $iconGlow.Color = [System.Windows.Media.ColorConverter]::ConvertFromString($theme.Primary)
+            $iconGlow.BlurRadius = 20
+            $iconGlow.ShadowDepth = 0
+            $iconGlow.Opacity = 0.3
+            $challengeIcon.Effect = $iconGlow
         }
     }
     $descText.Text  = $Challenge.Description
@@ -542,6 +567,17 @@ function global:Show-EntraGoatMainWindow {
     $xaml = Read-EntraGoatXaml -RelativePath 'Views/MainWindow.xaml'
     $win = ConvertTo-EntraGoatWindow -Xaml $xaml
 
+    # Window icon
+    $iconPath = Join-Path (Split-Path (Get-EntraGoatRootPath)) 'assets\LogoEntra.png'
+    if (Test-Path $iconPath) {
+        $bi = [System.Windows.Media.Imaging.BitmapImage]::new()
+        $bi.BeginInit()
+        $bi.UriSource = [Uri]$iconPath
+        $bi.CacheOption = 'OnLoad'
+        $bi.EndInit()
+        $win.Icon = $bi
+    }
+
     # Navigation state stored on the window
     $win.Tag = @{
         Challenges         = $Challenges
@@ -582,6 +618,100 @@ function global:Show-EntraGoatMainWindow {
         $newId = $nav.CurrentChallengeId + 1
         if ($newId -le $total) {
             Navigate-EntraGoatPage -Window $w -View 'Challenge' -Params @{ ChallengeId = $newId }
+        }
+    })
+
+    # Zoom: Ctrl+Plus / Ctrl+Minus / Ctrl+0 + on-screen buttons
+    $pageHost = $win.FindName('PageHost')
+    $zoomTransform = [System.Windows.Media.ScaleTransform]::new(1.0, 1.0)
+    $pageHost.LayoutTransform = $zoomTransform
+    $zoomLabel = $win.FindName('ZoomLabel')
+    $win.Tag.ZoomLevel = 1.0
+    $win.Tag.ZoomTransform = $zoomTransform
+    $win.Tag.ZoomLabel = $zoomLabel
+
+    # Zoom button handlers
+    $zoomInBtn = $win.FindName('ZoomInButton')
+    $zoomInBtn.Tag = $win
+    $zoomInBtn.Add_Click({
+        $w = $this.Tag; $nav = $w.Tag
+        $zoom = [Math]::Min(2.0, [Math]::Round($nav.ZoomLevel + 0.1, 1))
+        $nav.ZoomLevel = $zoom
+        $nav.ZoomTransform.ScaleX = $zoom
+        $nav.ZoomTransform.ScaleY = $zoom
+        $nav.ZoomLabel.Text = "$([int]($zoom * 100))%"
+    })
+    $zoomOutBtn = $win.FindName('ZoomOutButton')
+    $zoomOutBtn.Tag = $win
+    $zoomOutBtn.Add_Click({
+        $w = $this.Tag; $nav = $w.Tag
+        $zoom = [Math]::Max(0.5, [Math]::Round($nav.ZoomLevel - 0.1, 1))
+        $nav.ZoomLevel = $zoom
+        $nav.ZoomTransform.ScaleX = $zoom
+        $nav.ZoomTransform.ScaleY = $zoom
+        $nav.ZoomLabel.Text = "$([int]($zoom * 100))%"
+    })
+
+    $win.Add_PreviewKeyDown({
+        param($sender, $e)
+        $mods = $e.KeyboardDevice.Modifiers
+        $hasCtrl = ($mods -band [System.Windows.Input.ModifierKeys]::Control) -ne 0
+        if (-not $hasCtrl) { return }
+        $nav = $sender.Tag
+        $zoom = $nav.ZoomLevel
+        $changed = $false
+        switch ($e.Key) {
+            { $_ -eq 'OemPlus' -or $_ -eq 'Add' } {
+                $zoom = [Math]::Min(2.0, [Math]::Round($zoom + 0.1, 1))
+                $changed = $true; $e.Handled = $true
+            }
+            { $_ -eq 'OemMinus' -or $_ -eq 'Subtract' } {
+                $zoom = [Math]::Max(0.5, [Math]::Round($zoom - 0.1, 1))
+                $changed = $true; $e.Handled = $true
+            }
+            { $_ -eq 'D0' -or $_ -eq 'NumPad0' } {
+                $zoom = 1.0
+                $changed = $true; $e.Handled = $true
+            }
+        }
+        if ($changed) {
+            $nav.ZoomLevel = $zoom
+            $nav.ZoomTransform.ScaleX = $zoom
+            $nav.ZoomTransform.ScaleY = $zoom
+            $nav.ZoomLabel.Text = "$([int]($zoom * 100))%"
+        }
+    })
+
+    # Mouse-reactive glow background (Home page only)
+    $glowLayer = $win.FindName('GlowLayer')
+    $theme = Get-EntraGoatTheme
+    $glowColor = [System.Windows.Media.ColorConverter]::ConvertFromString($theme.Primary)
+    $glowBrush = [System.Windows.Media.RadialGradientBrush]::new()
+    $glowBrush.GradientOrigin = [System.Windows.Point]::new(0.5, 0.5)
+    $glowBrush.Center = [System.Windows.Point]::new(0.5, 0.5)
+    $glowBrush.RadiusX = 0.10
+    $glowBrush.RadiusY = 0.10
+    $stop1 = [System.Windows.Media.GradientStop]::new([System.Windows.Media.Color]::FromArgb(30, $glowColor.R, $glowColor.G, $glowColor.B), 0)
+    $stop2 = [System.Windows.Media.GradientStop]::new([System.Windows.Media.Color]::FromArgb(0, $glowColor.R, $glowColor.G, $glowColor.B), 1)
+    [void]$glowBrush.GradientStops.Add($stop1)
+    [void]$glowBrush.GradientStops.Add($stop2)
+    $glowLayer.Background = $glowBrush
+    $win.Tag.GlowBrush = $glowBrush
+    $win.Tag.GlowLayer = $glowLayer
+
+    $win.Add_MouseMove({
+        param($sender, $e)
+        $nav = $sender.Tag
+        $layer = $nav.GlowLayer
+        if ($layer.Visibility -ne 'Visible') { return }
+        $pos = $e.GetPosition($layer)
+        $w = $layer.ActualWidth
+        $h = $layer.ActualHeight
+        if ($w -gt 0 -and $h -gt 0) {
+            $rx = $pos.X / $w
+            $ry = $pos.Y / $h
+            $nav.GlowBrush.GradientOrigin = [System.Windows.Point]::new($rx, $ry)
+            $nav.GlowBrush.Center = [System.Windows.Point]::new($rx, $ry)
         }
     })
 
