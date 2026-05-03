@@ -6,7 +6,7 @@
 
 **EntraGoat** is a deliberately vulnerable Microsoft Entra ID infrastructure for security professionals. Deploy real-world identity misconfigurations and privilege escalation paths in your own tenant, then practice exploiting them in a safe, black-box CTF format.
 
-📖 [Full Documentation](./docs/) &nbsp;|&nbsp; 🌐 [Wiki](https://github.com/Semperis/EntraGoat/wiki) &nbsp;|&nbsp; 📝 [Blog Posts](https://www.semperis.com/blog/what-is-entragoat-entra-id-simulation-environment/)
+📖 [Documentation](./docs/) &nbsp;|&nbsp; 📝 [Blog Posts](https://www.semperis.com/blog/what-is-entragoat-entra-id-simulation-environment/)
 
 ---
 
@@ -56,9 +56,9 @@ cd scenarios
 | 1 | Misowned and Dangerous — Owner's Manual to Global Admin | Beginner |
 | 2 | Graph Me the Crown (and Role) | Beginner |
 | 3 | Group MemberShipwreck — Sailed into Admin Waters | Beginner |
-| 4 | The Eligible Menace — PIM Path to Power | Intermediate |
-| 5 | AU to Admin — The Restricted Path | Advanced |
-| 6 | Certificate of Insanity — Trusting the Wrong Authority | Advanced |
+| 4 | I (Eligibly) Own That | Intermediate |
+| 5 | Department of Escalations - AU Ready for This? | Advanced |
+| 6 | CBA (Certificate Bypass Authority) - Root Access Granted | Advanced |
 
 Each scenario includes a setup script, cleanup script, solution walkthrough, and a hidden flag.
 
@@ -68,9 +68,14 @@ Each scenario includes a setup script, cleanup script, solution walkthrough, and
 
 ### PowerShell GUI *(recommended)*
 
-| Home | Challenge |
-|:-:|:-:|
-| ![PS GUI Home](./screenshots/ps-gui-home.png) | ![PS GUI Challenge](./screenshots/ps-gui-challenge.png) |
+| Home |
+|:-:|
+| ![PS GUI Home](./screenshots/ps-gui-home.png) |
+
+| Challenge |
+|:-:|
+| ![PS GUI Challenge](./screenshots/ps-gui-challenge.png) |
+
 
 ### Terminal Output
 
