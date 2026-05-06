@@ -1,7 +1,7 @@
 # EntraGoat - A Deliberately Vulnerable Entra ID Environment
 
 <p align="center">
-  <img src="./icons/mainlogo.png" width="100%">
+  <img src="./icons/mainlogo.png" width="75%">
 </p>
 
 **EntraGoat** is a deliberately vulnerable Microsoft Entra ID infrastructure for security professionals. Deploy real-world identity misconfigurations and privilege escalation paths in your own tenant, then practice exploiting them in a safe, black-box CTF format.
